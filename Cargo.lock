@@ -1373,9 +1373,16 @@ dependencies = [
 name = "starboard"
 version = "0.1.0"
 dependencies = [
- "eframe",
  "egui",
  "serde",
+]
+
+[[package]]
+name = "starboard-eframe"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "starboard",
 ]
 
 [[package]]
