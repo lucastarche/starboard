@@ -12,3 +12,8 @@ edition = "2021"
 eframe = { version = "0.19.0", features = ["persistence"] }
 egui = { version = "0.19.0", features = ["persistence"] }
 serde = { version = "1.0.145", features = ["derive"] }
+
+[dependencies]
+eframe.workspace = true
+egui.workspace = true
+serde.workspace = true
