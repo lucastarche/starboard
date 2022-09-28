@@ -192,6 +192,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "clock"
+version = "0.1.0"
+dependencies = [
+ "egui",
+ "starboard",
+ "utils",
+]
+
+[[package]]
 name = "cmake"
 version = "0.1.48"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1652,6 +1661,7 @@ dependencies = [
  "egui",
  "image",
  "serde",
+ "utils",
 ]
 
 [[package]]
@@ -1830,6 +1840,13 @@ dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
+]
+
+[[package]]
+name = "utils"
+version = "0.1.0"
+dependencies = [
+ "egui",
 ]
 
 [[package]]

@@ -1,9 +1,7 @@
 use app_background::AppBackground;
-use drawable::Drawable;
+use utils::Drawable;
 
 mod app_background;
-mod drawable;
-
 #[derive(Default)]
 pub struct MyApp {
     background: AppBackground,

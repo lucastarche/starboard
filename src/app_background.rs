@@ -1,8 +1,6 @@
-use std::path::Path;
-
 use egui::{Color32, TextureHandle, Vec2};
-
-use crate::drawable::Drawable;
+use std::path::Path;
+use utils::Drawable;
 
 #[derive(Default)]
 pub struct AppBackground {
