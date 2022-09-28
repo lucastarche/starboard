@@ -18,3 +18,4 @@ image = "0.24.4"
 serde.workspace = true
 
 utils = { path = "./utils" }
+clock = { path = "./gadgets/clock" }

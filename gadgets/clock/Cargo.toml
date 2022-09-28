@@ -8,5 +8,4 @@ edition = "2021"
 [dependencies]
 egui.workspace = true
 
-starboard = { path = "../.." }
 utils = { path = "../../utils" }

@@ -196,7 +196,6 @@ name = "clock"
 version = "0.1.0"
 dependencies = [
  "egui",
- "starboard",
  "utils",
 ]
 
@@ -1658,6 +1657,7 @@ dependencies = [
 name = "starboard"
 version = "0.1.0"
 dependencies = [
+ "clock",
  "egui",
  "image",
  "serde",
