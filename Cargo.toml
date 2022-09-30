@@ -6,14 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["bin/eframe"]
+members = ["bin/eframe", "gadgets/clock", "utils"]
 
 [workspace.dependencies]
 egui = { version = "0.19.0", features = ["persistence"] }
 serde = { version = "1.0.145", features = ["derive"] }
 
-
 [dependencies]
 egui.workspace = true
 image = "0.24.4"
 serde.workspace = true
+
+utils = { path = "./utils" }
+clock = { path = "./gadgets/clock" }
