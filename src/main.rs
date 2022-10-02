@@ -1,12 +1,21 @@
 use app_background::AppBackground;
 use clock::ClockGadget;
-use utils::{Drawable, Gadget};
+use utils::{Drawable, Gadget, NetworkRuntime};
 
 mod app_background;
-#[derive(Default)]
+
 pub struct StarboardApp {
     background: AppBackground,
     clock_gadget: ClockGadget,
+}
+
+impl StarboardApp {
+    fn new(network_runtime: NetworkRuntime) -> Self {
+        Self {
+            background: Default::default(),
+            clock_gadget: ClockGadget::new(&network_runtime),
+        }
+    }
 }
 
 impl eframe::App for StarboardApp {
@@ -21,11 +30,26 @@ impl eframe::App for StarboardApp {
     }
 }
 
+fn setup_network_runtime() -> NetworkRuntime {
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    std::thread::spawn(move || {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_time()
+            .build()
+            .unwrap();
+        tx.send(runtime.handle().clone())
+    });
+
+    rx.blocking_recv().unwrap()
+}
+
 fn main() {
     let options = eframe::NativeOptions::default();
+    let network_runtime = setup_network_runtime();
+
     eframe::run_native(
         "My egui App",
         options,
-        Box::new(|_cc| Box::new(StarboardApp::default())),
+        Box::new(|_cc| Box::new(StarboardApp::new(network_runtime))),
     );
 }

@@ -11,11 +11,13 @@ members = ["gadgets/clock", "utils"]
 [workspace.dependencies]
 egui = { version = "0.19.0", features = ["persistence"] }
 serde = { version = "1.0.145", features = ["derive"] }
+tokio = { version = "1.21.2", features = ["rt", "time", "sync"] }
 
 [dependencies]
 egui.workspace = true
 eframe = { version = "0.19.0", features = ["persistence"] }
 image = "0.24.4"
+tokio.workspace = true
 serde.workspace = true
 
 utils = { path = "./utils" }
