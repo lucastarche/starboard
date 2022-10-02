@@ -5,7 +5,7 @@ use utils::Gadget;
 pub struct ClockGadget;
 
 impl Gadget for ClockGadget {
-    fn new(_network_runtime: &utils::NetworkRuntime) -> Self {
+    fn new(_network_runtime: &utils::NetworkRuntime, _egui_ctx: &egui::Context) -> Self {
         Self
     }
 
