@@ -9,4 +9,4 @@ edition = "2021"
 chrono = "0.4.22"
 egui.workspace = true
 
-utils = { path = "../../utils" }
+utils.workspace = true
