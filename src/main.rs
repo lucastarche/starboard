@@ -36,14 +36,20 @@ impl eframe::App for StarboardApp {
 
 fn setup_network_runtime() -> NetworkRuntime {
     let (tx, rx) = tokio::sync::oneshot::channel();
-    std::thread::spawn(move || {
-        let runtime = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        tx.send(runtime.handle().clone());
-        runtime.block_on(async { tokio::time::sleep(std::time::Duration::from_secs(30)).await });
-    });
+
+    std::thread::Builder::new()
+        .name("network".into())
+        .spawn(move || {
+            let runtime = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
+            tx.send(runtime.handle().clone())
+                .expect("the other end of this sender shouldn't be gone already");
+            runtime
+                .block_on(async { tokio::time::sleep(std::time::Duration::from_secs(30)).await });
+        })
+        .expect("failed to spawn thead");
 
     rx.blocking_recv().unwrap()
 }
