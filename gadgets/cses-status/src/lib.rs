@@ -34,11 +34,13 @@ impl Gadget for CSESStatusGadget {
     }
 
     fn render(&mut self, ctx: &egui::Context) {
-        egui::Window::new("CSES Status").show(ctx, |ui| {
-            egui::ScrollArea::vertical().show(ui, |ui| {
-                ui.horizontal_wrapped(|ui| render_problems(ui, &self.problem_data.locked()));
+        egui::Window::new("CSES Status")
+            .min_width(200.0)
+            .show(ctx, |ui| {
+                egui::ScrollArea::vertical().show(ui, |ui| {
+                    ui.horizontal_wrapped(|ui| render_problems(ui, &self.problem_data.locked()));
+                });
             });
-        });
     }
 }
 
