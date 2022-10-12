@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use cses_query::{Problem, ProblemStatus};
-use egui::{style::Margin, Color32, Frame, RichText};
+use egui::{Color32, CursorIcon, RichText, Sense};
 use utils::{Gadget, MutexExt};
 
 mod cses_query;
@@ -53,6 +53,15 @@ fn render_problems(ui: &mut egui::Ui, problems: &Vec<Problem>) {
         let text = RichText::new(status_text)
             .color(background_color)
             .size(24.0);
-        ui.add_sized([32.0, 32.0], egui::Label::new(text));
+
+        let item = ui
+            .add_sized([32.0, 32.0], egui::Label::new(text).sense(Sense::click()))
+            .on_hover_cursor(CursorIcon::PointingHand)
+            .on_hover_text(&problem.title);
+
+        if item.clicked() {
+            let problem_url = format!("https://cses.fi{}", problem.task_link);
+            ui.ctx().output().open_url(problem_url);
+        }
     }
 }
