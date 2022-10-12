@@ -58,16 +58,18 @@ impl Gadget for WeatherGadget {
             retrieved_at,
         } = self.weather_data.locked().clone();
 
-        egui::Window::new("Weather").show(ctx, |ui| {
-            ui.label(RichText::new(format!("{temperature}°C | {feels_like}°C")).size(64.0));
+        egui::Window::new("Weather")
+            .resizable(false)
+            .show(ctx, |ui| {
+                ui.label(RichText::new(format!("{temperature}°C | {feels_like}°C")).size(64.0));
 
-            ui.horizontal_wrapped(|ui| {
-                ui.spacing_mut().item_spacing.x = 0.0;
-                ui.label(RichText::new(format!("{location} (via ")).size(16.0));
-                ui.hyperlink_to(RichText::new("wttr.in").size(16.0), "https://wttr.in");
-                ui.label(RichText::new(format!(" at {retrieved_at})")).size(16.0));
+                ui.horizontal_wrapped(|ui| {
+                    ui.spacing_mut().item_spacing.x = 0.0;
+                    ui.label(RichText::new(format!("{location} (via ")).size(16.0));
+                    ui.hyperlink_to(RichText::new("wttr.in").size(16.0), "https://wttr.in");
+                    ui.label(RichText::new(format!(" at {retrieved_at})")).size(16.0));
+                });
             });
-        });
     }
 }
 
