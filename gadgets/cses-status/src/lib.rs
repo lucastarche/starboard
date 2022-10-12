@@ -46,24 +46,28 @@ impl Gadget for CSESStatusGadget {
 
 fn render_problems(ui: &mut egui::Ui, problems: &Vec<Problem>) {
     for problem in problems.iter() {
-        let (status_text, background_color) = match problem.status {
-            ProblemStatus::Pending => ("\u{2013}", Color32::GRAY), // Dash
-            ProblemStatus::Attempted => ("\u{274c}", Color32::LIGHT_RED), // Cross
-            ProblemStatus::Completed => ("\u{2705}", Color32::LIGHT_GREEN), // Check
-        };
+        if problem.task_link == "" {
+            let text = RichText::new("\u{FF01}").color(Color32::RED).size(24.0);
+            ui.add_sized([32.0, 32.0], egui::Label::new(text));
+        } else {
+            let (status_text, background_color) = match problem.status {
+                ProblemStatus::Pending => ("\u{2013}", Color32::GRAY), // Dash
+                ProblemStatus::Attempted => ("\u{274c}", Color32::LIGHT_RED), // Cross
+                ProblemStatus::Completed => ("\u{2705}", Color32::LIGHT_GREEN), // Check
+            };
+            let text = RichText::new(status_text)
+                .color(background_color)
+                .size(24.0);
 
-        let text = RichText::new(status_text)
-            .color(background_color)
-            .size(24.0);
+            let item = ui
+                .add_sized([32.0, 32.0], egui::Label::new(text).sense(Sense::click()))
+                .on_hover_cursor(CursorIcon::PointingHand)
+                .on_hover_text(&problem.title);
 
-        let item = ui
-            .add_sized([32.0, 32.0], egui::Label::new(text).sense(Sense::click()))
-            .on_hover_cursor(CursorIcon::PointingHand)
-            .on_hover_text(&problem.title);
-
-        if item.clicked() {
-            let problem_url = format!("https://cses.fi{}", problem.task_link);
-            ui.ctx().output().open_url(problem_url);
+            if item.clicked() {
+                let problem_url = format!("https://cses.fi{}", problem.task_link);
+                ui.ctx().output().open_url(problem_url);
+            }
         }
     }
 }
