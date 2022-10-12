@@ -1,5 +1,6 @@
 use app_background::AppBackground;
 use clock::ClockGadget;
+use cses_status::CSESStatusGadget;
 use utils::{Drawable, Gadget, NetworkRuntime};
 use weather::WeatherGadget;
 
@@ -9,6 +10,7 @@ pub struct StarboardApp {
     background: AppBackground,
     clock_gadget: ClockGadget,
     weather_gadget: WeatherGadget,
+    cses_status_gadget: CSESStatusGadget,
 }
 
 impl StarboardApp {
@@ -17,6 +19,7 @@ impl StarboardApp {
             background: Default::default(),
             clock_gadget: ClockGadget::new(&network_runtime, &egui_ctx),
             weather_gadget: WeatherGadget::new(&network_runtime, &egui_ctx),
+            cses_status_gadget: CSESStatusGadget::new(&network_runtime, &egui_ctx),
         }
     }
 }
@@ -31,6 +34,7 @@ impl eframe::App for StarboardApp {
 
         self.clock_gadget.render(ctx);
         self.weather_gadget.render(ctx);
+        self.cses_status_gadget.render(ctx);
     }
 }
 

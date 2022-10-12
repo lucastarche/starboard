@@ -28,3 +28,4 @@ image = "0.24.4"
 
 clock = { path = "./gadgets/clock" }
 weather = { path = "./gadgets/weather" }
+cses-status = { path = "./gadgets/cses-status" }

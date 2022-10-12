@@ -8,9 +8,9 @@ pub enum ProblemStatus {
 }
 
 pub struct Problem {
-    task_link: String,
-    title: String,
-    status: ProblemStatus,
+    pub task_link: String,
+    pub title: String,
+    pub status: ProblemStatus,
 }
 
 pub async fn query_user_status(user_id: u64) -> anyhow::Result<Vec<Problem>> {
