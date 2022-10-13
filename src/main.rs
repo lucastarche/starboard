@@ -16,7 +16,7 @@ pub struct StarboardApp {
 impl StarboardApp {
     fn new(network_runtime: NetworkRuntime, egui_ctx: &egui::Context) -> Self {
         Self {
-            background: Default::default(),
+            background: AppBackground::default(),
             clock_gadget: ClockGadget::new(&network_runtime, egui_ctx),
             weather_gadget: WeatherGadget::new(&network_runtime, egui_ctx),
             cses_status_gadget: CSESStatusGadget::new(&network_runtime, egui_ctx),

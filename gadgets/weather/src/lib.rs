@@ -25,7 +25,7 @@ struct WeatherData {
 impl Gadget for WeatherGadget {
     fn new(network_runtime: &utils::NetworkRuntime, egui_ctx: &egui::Context) -> Self {
         let this = Self {
-            weather_data: Arc::new(Mutex::new(Default::default())),
+            weather_data: Arc::new(Mutex::new(WeatherData::default())),
         };
 
         let weather_data_lock = this.weather_data.clone();
