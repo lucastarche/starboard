@@ -14,7 +14,8 @@ pub struct StarboardApp {
 }
 
 impl StarboardApp {
-    fn new(network_runtime: NetworkRuntime, egui_ctx: &egui::Context) -> Self {
+    fn new(egui_ctx: &egui::Context) -> Self {
+        let network_runtime = setup_network_runtime();
         Self {
             background: AppBackground::default(),
             clock_gadget: ClockGadget::new(&network_runtime, egui_ctx),
@@ -60,11 +61,10 @@ fn setup_network_runtime() -> NetworkRuntime {
 
 fn main() {
     let options = eframe::NativeOptions::default();
-    let network_runtime = setup_network_runtime();
 
     eframe::run_native(
         "My egui App",
         options,
-        Box::new(|cc| Box::new(StarboardApp::new(network_runtime, &cc.egui_ctx))),
+        Box::new(|cc| Box::new(StarboardApp::new(&cc.egui_ctx))),
     );
 }
