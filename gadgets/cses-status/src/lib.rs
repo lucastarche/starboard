@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use cses_query::{Problem, ProblemStatus};
 use egui::{Color32, CursorIcon, RichText, Sense};
-use utils::{Gadget, MutexExt};
+use utils::{Gadget, GadgetFactory, MutexExt};
 
 mod cses_query;
 
@@ -10,13 +10,35 @@ pub struct CSESStatusGadget {
     problem_data: Arc<Mutex<Vec<Problem>>>,
 }
 
+pub struct CSESStatusGadgetFactory;
+
 impl Gadget for CSESStatusGadget {
-    fn new(network_runtime: &utils::NetworkRuntime, egui_ctx: &egui::Context) -> Self {
-        let this = Self {
+    fn render(&mut self, ctx: &egui::Context) {
+        egui::Window::new("CSES Status")
+            .min_width(200.0)
+            .show(ctx, |ui| {
+                egui::ScrollArea::vertical().show(ui, |ui| {
+                    ui.horizontal_wrapped(|ui| render_problems(ui, &self.problem_data.locked()));
+                });
+            });
+    }
+}
+
+impl GadgetFactory for CSESStatusGadgetFactory {
+    fn gadget_name(&self) -> &'static str {
+        "CSES Status"
+    }
+
+    fn make_gadget(
+        &self,
+        network_runtime: &utils::NetworkRuntime,
+        egui_ctx: &egui::Context,
+    ) -> Box<dyn Gadget> {
+        let cses_status_gadget = CSESStatusGadget {
             problem_data: Arc::new(Mutex::new(vec![])),
         };
 
-        let problem_lock = this.problem_data.clone();
+        let problem_lock = cses_status_gadget.problem_data.clone();
         let ctx = egui_ctx.clone();
         network_runtime.spawn(async move {
             // TODO: Third time we ask for this, allow configuring user ID
@@ -30,17 +52,7 @@ impl Gadget for CSESStatusGadget {
             ctx.request_repaint();
         });
 
-        this
-    }
-
-    fn render(&mut self, ctx: &egui::Context) {
-        egui::Window::new("CSES Status")
-            .min_width(200.0)
-            .show(ctx, |ui| {
-                egui::ScrollArea::vertical().show(ui, |ui| {
-                    ui.horizontal_wrapped(|ui| render_problems(ui, &self.problem_data.locked()));
-                });
-            });
+        Box::new(cses_status_gadget)
     }
 }
 
