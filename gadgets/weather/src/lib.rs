@@ -25,7 +25,7 @@ struct WeatherData {
 impl Gadget for WeatherGadget {
     fn new(network_runtime: &utils::NetworkRuntime, egui_ctx: &egui::Context) -> Self {
         let this = Self {
-            weather_data: Arc::new(Mutex::new(Default::default())),
+            weather_data: Arc::new(Mutex::new(WeatherData::default())),
         };
 
         let weather_data_lock = this.weather_data.clone();
@@ -38,7 +38,7 @@ impl Gadget for WeatherGadget {
                 match weather_data {
                     Ok(weather_data) => *weather_data_lock.locked() = weather_data,
                     Err(error) => {
-                        println!("Failed to retrieve the weather data from wttr.in: {error}")
+                        println!("Failed to retrieve the weather data from wttr.in: {error}");
                     }
                 }
 

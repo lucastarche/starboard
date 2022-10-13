@@ -44,9 +44,9 @@ impl Gadget for CSESStatusGadget {
     }
 }
 
-fn render_problems(ui: &mut egui::Ui, problems: &Vec<Problem>) {
+fn render_problems(ui: &mut egui::Ui, problems: &[Problem]) {
     for problem in problems.iter() {
-        if problem.task_link == "" {
+        if problem.task_link.is_empty() {
             let text = RichText::new("\u{FF01}").color(Color32::RED).size(24.0);
             ui.add_sized([32.0, 32.0], egui::Label::new(text));
         } else {
