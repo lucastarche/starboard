@@ -14,12 +14,12 @@ pub struct StarboardApp {
 }
 
 impl StarboardApp {
-    fn new(network_runtime: NetworkRuntime, egui_ctx: egui::Context) -> Self {
+    fn new(network_runtime: NetworkRuntime, egui_ctx: &egui::Context) -> Self {
         Self {
             background: Default::default(),
-            clock_gadget: ClockGadget::new(&network_runtime, &egui_ctx),
-            weather_gadget: WeatherGadget::new(&network_runtime, &egui_ctx),
-            cses_status_gadget: CSESStatusGadget::new(&network_runtime, &egui_ctx),
+            clock_gadget: ClockGadget::new(&network_runtime, egui_ctx),
+            weather_gadget: WeatherGadget::new(&network_runtime, egui_ctx),
+            cses_status_gadget: CSESStatusGadget::new(&network_runtime, egui_ctx),
         }
     }
 }
@@ -65,6 +65,6 @@ fn main() {
     eframe::run_native(
         "My egui App",
         options,
-        Box::new(|cc| Box::new(StarboardApp::new(network_runtime, cc.egui_ctx.clone()))),
+        Box::new(|cc| Box::new(StarboardApp::new(network_runtime, &cc.egui_ctx))),
     );
 }
