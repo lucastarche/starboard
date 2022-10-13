@@ -2,7 +2,9 @@ use std::sync::Mutex;
 
 /// Extension trait for Rust's standard Mutex type
 pub trait MutexExt<T>: sealed::Sealed {
-    /// Locks the Mutex and gets us a MutexGuard even if the Mutex is poisoned
+    /// Locks the Mutex and gets us a [`MutexGuard`] even if the Mutex is poisoned
+    ///
+    /// [`MutexGuard`]: std::sync::MutexGuard
     fn locked(&self) -> std::sync::MutexGuard<T>;
 }
 
