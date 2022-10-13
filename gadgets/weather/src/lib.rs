@@ -38,7 +38,7 @@ impl Gadget for WeatherGadget {
                 match weather_data {
                     Ok(weather_data) => *weather_data_lock.locked() = weather_data,
                     Err(error) => {
-                        println!("Failed to retrieve the weather data from wttr.in: {error}")
+                        println!("Failed to retrieve the weather data from wttr.in: {error}");
                     }
                 }
 
