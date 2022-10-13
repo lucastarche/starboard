@@ -23,7 +23,13 @@ impl Drawable for AppBackground {
             }
         });
 
-        ui.image(texture, texture.size_vec2());
+        let available_size = ui.available_size();
+        let x_scale = texture.size_vec2().x / available_size.x;
+        let y_scale = texture.size_vec2().y / available_size.y;
+
+        ui.centered_and_justified(|ui| {
+            ui.image(texture, texture.size_vec2() / x_scale.max(y_scale));
+        });
     }
 }
 
