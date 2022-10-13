@@ -26,6 +26,9 @@ utils.workspace = true
 eframe = { version = "0.19.0", features = ["persistence"] }
 image = "0.24.4"
 
-clock = { path = "./gadgets/clock" }
-weather = { path = "./gadgets/weather" }
-cses-status = { path = "./gadgets/cses-status" }
+clock = { path = "./gadgets/clock", optional = true }
+weather = { path = "./gadgets/weather", optional = true }
+cses-status = { path = "./gadgets/cses-status", optional = true }
+
+[features]
+default = ["clock", "weather"]

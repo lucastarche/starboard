@@ -1,26 +1,27 @@
 use app_background::AppBackground;
-use clock::ClockGadget;
-use cses_status::CSESStatusGadget;
 use utils::{Drawable, Gadget, NetworkRuntime};
-use weather::WeatherGadget;
 
 mod app_background;
+mod gadgets;
 
 pub struct StarboardApp {
     background: AppBackground,
-    clock_gadget: ClockGadget,
-    weather_gadget: WeatherGadget,
-    cses_status_gadget: CSESStatusGadget,
+    gadgets: Vec<Box<dyn Gadget>>,
 }
 
 impl StarboardApp {
     fn new(egui_ctx: &egui::Context) -> Self {
         let network_runtime = setup_network_runtime();
+        let mut gadgets = vec![];
+
+        // FIXME: Also allow users to spawn gadgets as they wish in the UI
+        for gadget_factory in gadgets::GADGET_FACTORIES {
+            gadgets.push(gadget_factory.make_gadget(&network_runtime, egui_ctx));
+        }
+
         Self {
             background: AppBackground::default(),
-            clock_gadget: ClockGadget::new(&network_runtime, egui_ctx),
-            weather_gadget: WeatherGadget::new(&network_runtime, egui_ctx),
-            cses_status_gadget: CSESStatusGadget::new(&network_runtime, egui_ctx),
+            gadgets,
         }
     }
 }
@@ -33,9 +34,9 @@ impl eframe::App for StarboardApp {
             .order(egui::Order::Background)
             .show(ctx, |ui| self.background.draw(ui));
 
-        self.clock_gadget.render(ctx);
-        self.weather_gadget.render(ctx);
-        self.cses_status_gadget.render(ctx);
+        for gadget in &mut self.gadgets {
+            gadget.render(ctx);
+        }
     }
 }
 

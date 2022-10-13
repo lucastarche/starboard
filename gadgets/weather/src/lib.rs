@@ -5,7 +5,7 @@ use std::{
 
 use chrono::NaiveDateTime;
 use egui::RichText;
-use utils::{Gadget, MutexExt};
+use utils::{Gadget, GadgetFactory, MutexExt};
 use wttr::WeatherResponse;
 
 mod wttr;
@@ -22,34 +22,9 @@ struct WeatherData {
     retrieved_at: String,
 }
 
+pub struct WeatherGadgetFactory;
+
 impl Gadget for WeatherGadget {
-    fn new(network_runtime: &utils::NetworkRuntime, egui_ctx: &egui::Context) -> Self {
-        let this = Self {
-            weather_data: Arc::new(Mutex::new(WeatherData::default())),
-        };
-
-        let weather_data_lock = this.weather_data.clone();
-        let ctx = egui_ctx.clone();
-        network_runtime.spawn(async move {
-            loop {
-                // TODO: Allow configuring places in a config file or some such
-                let weather_data = fetch_weather_data("").await;
-
-                match weather_data {
-                    Ok(weather_data) => *weather_data_lock.locked() = weather_data,
-                    Err(error) => {
-                        println!("Failed to retrieve the weather data from wttr.in: {error}");
-                    }
-                }
-
-                ctx.request_repaint();
-                tokio::time::sleep(Duration::from_secs(5 * 60)).await; // 5 minutes
-            }
-        });
-
-        this
-    }
-
     fn render(&mut self, ctx: &egui::Context) {
         let WeatherData {
             temperature,
@@ -70,6 +45,43 @@ impl Gadget for WeatherGadget {
                     ui.label(RichText::new(format!(" at {retrieved_at})")).size(16.0));
                 });
             });
+    }
+}
+
+impl GadgetFactory for WeatherGadgetFactory {
+    fn gadget_name(&self) -> &'static str {
+        "Weather"
+    }
+
+    fn make_gadget(
+        &self,
+        network_runtime: &utils::NetworkRuntime,
+        egui_ctx: &egui::Context,
+    ) -> Box<dyn Gadget> {
+        let weather_gadget = WeatherGadget {
+            weather_data: Arc::new(Mutex::new(WeatherData::default())),
+        };
+
+        let weather_data_lock = weather_gadget.weather_data.clone();
+        let ctx = egui_ctx.clone();
+        network_runtime.spawn(async move {
+            loop {
+                // TODO: Allow configuring places in a config file or some such
+                let weather_data = fetch_weather_data("").await;
+
+                match weather_data {
+                    Ok(weather_data) => *weather_data_lock.locked() = weather_data,
+                    Err(error) => {
+                        println!("Failed to retrieve the weather data from wttr.in: {error}");
+                    }
+                }
+
+                ctx.request_repaint();
+                tokio::time::sleep(Duration::from_secs(5 * 60)).await; // 5 minutes
+            }
+        });
+
+        Box::new(weather_gadget)
     }
 }
 
