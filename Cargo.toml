@@ -6,14 +6,21 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["gadgets/clock", "gadgets/weather", "gadgets/cses-status", "utils"]
+members = [
+  "gadgets/clock", 
+  "gadgets/weather", 
+  "gadgets/cses-status", 
+  "utils"
+]
 
 [workspace.dependencies]
 anyhow = "1.0.65"
 chrono = "0.4.22"
 egui = { version = "0.19.0", features = ["persistence"] }
+egui_extras = { version = "0.19.0", features = ["image"] }
 reqwest = "0.11.12"
 serde = { version = "1.0.145", features = ["derive"] }
+serde_json = "1.0.85"
 tokio = { version = "1.21.2", features = ["rt", "time", "sync"] }
 utils = { path = "./utils" }
 
