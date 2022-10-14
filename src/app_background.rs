@@ -1,43 +1,35 @@
-use egui::{Color32, TextureHandle, Vec2};
+use egui::TextureHandle;
 use std::path::Path;
 use utils::Drawable;
 
 #[derive(Default)]
 pub struct AppBackground {
+    loaded: bool,
     texture: Option<TextureHandle>,
 }
 
 impl Drawable for AppBackground {
     fn draw(&mut self, ui: &mut egui::Ui) {
-        let texture: &TextureHandle = self.texture.get_or_insert_with(|| {
+        if !self.loaded {
             if let Ok(color_image) = load_image_from_path(Path::new("assets/background.jpg")) {
-                // TODO: Load file from a config or something
-                ui.ctx()
-                    .load_texture("background-image", color_image, egui::TextureFilter::Linear)
-            } else {
-                ui.ctx().load_texture(
+                self.texture = Some(ui.ctx().load_texture(
                     "background-image",
-                    egui::ColorImage::new([1920, 1080], Color32::from_rgb(0x28, 0x28, 0x28)),
+                    color_image,
                     egui::TextureFilter::Linear,
-                )
+                ));
             }
-        });
 
-        let available_size = ui.available_size();
-        let x_scale = texture.size_vec2().x / available_size.x;
-        let y_scale = texture.size_vec2().y / available_size.y;
+            self.loaded = true;
+        }
 
-        ui.centered_and_justified(|ui| {
-            ui.image(texture, texture.size_vec2() / x_scale.max(y_scale));
-        });
-    }
-}
+        if let Some(texture) = &self.texture {
+            let available_size = ui.available_size();
+            let x_scale = texture.size_vec2().x / available_size.x;
+            let y_scale = texture.size_vec2().y / available_size.y;
 
-impl AppBackground {
-    pub fn size(&self) -> Vec2 {
-        match &self.texture {
-            Some(t) => t.size_vec2(),
-            None => Vec2::ZERO,
+            ui.centered_and_justified(|ui| {
+                ui.image(texture.id(), texture.size_vec2() / x_scale.max(y_scale));
+            });
         }
     }
 }
