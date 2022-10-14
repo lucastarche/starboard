@@ -2232,6 +2232,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "safebooru-waifu"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "egui",
+ "egui_extras",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "utils",
+]
+
+[[package]]
 name = "same-file"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2522,6 +2536,7 @@ dependencies = [
  "eframe",
  "egui",
  "image",
+ "safebooru-waifu",
  "serde",
  "tokio",
  "utils",

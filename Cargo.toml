@@ -10,6 +10,7 @@ members = [
   "gadgets/clock", 
   "gadgets/weather", 
   "gadgets/cses-status", 
+  "gadgets/safebooru-waifu",
   "utils"
 ]
 
@@ -36,6 +37,7 @@ image = "0.24.4"
 clock = { path = "./gadgets/clock", optional = true }
 weather = { path = "./gadgets/weather", optional = true }
 cses-status = { path = "./gadgets/cses-status", optional = true }
+safebooru-waifu = { path = "./gadgets/safebooru-waifu", optional = true }
 
 [features]
 default = ["clock", "weather"]
