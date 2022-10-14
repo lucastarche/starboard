@@ -16,7 +16,13 @@ impl Gadget for WaifuGadget {
     fn render(&mut self, ctx: &egui::Context) {
         egui::Window::new("Your daily waifu").show(ctx, |ui| {
             if let Some(image) = &*self.image.locked() {
-                image.show_size(ui, ui.available_size());
+                let available_size = ui.available_size();
+                let x_scale = image.size_vec2().x / available_size.x;
+                let y_scale = image.size_vec2().y / available_size.y;
+
+                ui.centered_and_justified(|ui| {
+                    image.show_size(ui, image.size_vec2() / x_scale.max(y_scale));
+                });
             }
         });
     }
