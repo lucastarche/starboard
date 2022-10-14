@@ -64,7 +64,7 @@ fn main() {
     let options = eframe::NativeOptions::default();
 
     eframe::run_native(
-        "My egui App",
+        "starboard",
         options,
         Box::new(|cc| Box::new(StarboardApp::new(&cc.egui_ctx))),
     );
