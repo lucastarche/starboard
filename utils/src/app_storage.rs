@@ -1,5 +1,20 @@
 use std::path::PathBuf;
 
+#[derive(serde::Deserialize)]
+pub struct StarboardConfig {
+    #[serde(rename = "background")]
+    pub background_path: PathBuf,
+}
+
+impl StarboardConfig {
+    pub fn open() -> anyhow::Result<Self> {
+        let path = get_config_path();
+        let config = std::fs::read_to_string(path)?;
+
+        Ok(toml_edit::easy::from_str(&config)?)
+    }
+}
+
 pub(crate) fn get_config_path() -> PathBuf {
     let path = dirs::config_dir().unwrap().join("starboard");
 
