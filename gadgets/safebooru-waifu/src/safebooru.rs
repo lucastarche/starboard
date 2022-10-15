@@ -1,7 +1,6 @@
-use std::io::Error;
-
 use egui_extras::RetainedImage;
 use serde::{Deserialize, Serialize};
+use utils::RetainedImageError;
 
 const QUERY_URL: &str = "https://safebooru.donmai.us/posts/random.json?tags=1girl";
 
@@ -19,7 +18,7 @@ pub async fn query_random_image() -> anyhow::Result<RetainedImage> {
         image_response.url().to_string(),
         &image_response.bytes().await?,
     )
-    .map_err(|e| Error::new(std::io::ErrorKind::Other, e))?;
+    .map_err(RetainedImageError)?;
 
     Ok(image)
 }
