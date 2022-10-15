@@ -25,6 +25,10 @@ struct WeatherData {
 pub struct WeatherGadgetFactory;
 
 impl Gadget for WeatherGadget {
+    fn id(&self) -> &'static str {
+        "weather"
+    }
+
     fn render(&mut self, ctx: &egui::Context) {
         let WeatherData {
             temperature,

@@ -6,5 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow.workspace = true
 egui.workspace = true
 tokio.workspace = true
+serde.workspace = true
+
+toml_edit = { version = "0.14.4", features = ["serde", "easy"] }
+
+# Note: If you think about moving this to workspace deps, I recommend rethinking your design,
+#       as utils should be the only place directly inspecting the user paths.
+dirs = "4.0.0"

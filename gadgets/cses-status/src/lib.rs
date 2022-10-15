@@ -13,6 +13,10 @@ pub struct CSESStatusGadget {
 pub struct CSESStatusGadgetFactory;
 
 impl Gadget for CSESStatusGadget {
+    fn id(&self) -> &'static str {
+        "cses-status"
+    }
+
     fn render(&mut self, ctx: &egui::Context) {
         egui::Window::new("CSES Status")
             .min_width(200.0)

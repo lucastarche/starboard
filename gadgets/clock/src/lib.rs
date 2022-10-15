@@ -7,6 +7,10 @@ pub struct ClockGadget;
 pub struct ClockGadgetFactory;
 
 impl Gadget for ClockGadget {
+    fn id(&self) -> &'static str {
+        "clock"
+    }
+
     fn render(&mut self, ctx: &egui::Context) {
         egui::Window::new("Clock").resizable(false).show(ctx, |ui| {
             let now = Local::now();
