@@ -7,4 +7,6 @@ pub const GADGET_FACTORIES: &[&dyn GadgetFactory] = &[
     &weather::WeatherGadgetFactory,
     #[cfg(feature = "cses-status")]
     &cses_status::CSESStatusGadgetFactory,
+    #[cfg(feature = "safebooru-waifu")]
+    &safebooru_waifu::WaifuGadgetFactory,
 ];
