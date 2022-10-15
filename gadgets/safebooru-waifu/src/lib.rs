@@ -39,7 +39,7 @@ impl GadgetFactory for WaifuGadgetFactory {
         egui_ctx: &egui::Context,
     ) -> Box<dyn Gadget> {
         let waifu_gadget = WaifuGadget {
-            image: Arc::new(Mutex::new(None)),
+            image: Arc::default(),
         };
 
         let image_lock = waifu_gadget.image.clone();
