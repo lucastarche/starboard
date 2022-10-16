@@ -46,7 +46,7 @@ where
 {
     let config_path = app_storage::get_config_path();
 
-    let config = std::fs::read_to_string(&config_path)?;
+    let config = std::fs::read_to_string(&config_path).unwrap_or_default();
     let mut config = config.parse::<toml_edit::Document>()?;
     let c = toml_edit::ser::to_item(&c)?.into_table().unwrap();
     config[gadget.id()] = Item::Table(c);
