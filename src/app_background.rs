@@ -1,6 +1,5 @@
 use egui::{Color32, TextureHandle, Vec2};
-use std::path::Path;
-use utils::Drawable;
+use utils::{Drawable, StarboardConfig};
 
 #[derive(Default)]
 pub struct AppBackground {
@@ -10,8 +9,11 @@ pub struct AppBackground {
 impl Drawable for AppBackground {
     fn draw(&mut self, ui: &mut egui::Ui) {
         let texture: &TextureHandle = self.texture.get_or_insert_with(|| {
-            if let Ok(color_image) = load_image_from_path(Path::new("assets/background.jpg")) {
-                // TODO: Load file from a config or something
+            let color_image = StarboardConfig::open().and_then(|config| {
+                load_image_from_path(&config.background_path).map_err(anyhow::Error::new)
+            });
+
+            if let Ok(color_image) = color_image {
                 ui.ctx()
                     .load_texture("background-image", color_image, egui::TextureFilter::Linear)
             } else {

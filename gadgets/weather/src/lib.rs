@@ -24,7 +24,16 @@ struct WeatherData {
 
 pub struct WeatherGadgetFactory;
 
+#[derive(serde::Deserialize, Default)]
+struct WeatherConfig {
+    locations: Vec<String>,
+}
+
 impl Gadget for WeatherGadget {
+    fn id(&self) -> &'static str {
+        "weather"
+    }
+
     fn render(&mut self, ctx: &egui::Context) {
         let WeatherData {
             temperature,
@@ -64,10 +73,15 @@ impl GadgetFactory for WeatherGadgetFactory {
 
         let weather_data_lock = weather_gadget.weather_data.clone();
         let ctx = egui_ctx.clone();
+        let config: WeatherConfig = utils::config_for_gadget(&weather_gadget).unwrap_or_default();
         network_runtime.spawn(async move {
             loop {
-                // TODO: Allow configuring places in a config file or some such
-                let weather_data = fetch_weather_data("").await;
+                // FIXME: Allow the user to choose which of the configured locations to open
+                let location = match config.locations.get(0) {
+                    Some(location) => location,
+                    None => "",
+                };
+                let weather_data = fetch_weather_data(location).await;
 
                 match weather_data {
                     Ok(weather_data) => *weather_data_lock.locked() = weather_data,

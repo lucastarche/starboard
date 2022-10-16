@@ -61,7 +61,11 @@ fn setup_network_runtime() -> NetworkRuntime {
 }
 
 fn main() {
-    let options = eframe::NativeOptions::default();
+    let options = eframe::NativeOptions {
+        maximized: true,
+        decorated: false,
+        ..Default::default()
+    };
 
     eframe::run_native(
         "starboard",

@@ -13,6 +13,10 @@ pub struct WaifuGadget {
 pub struct WaifuGadgetFactory;
 
 impl Gadget for WaifuGadget {
+    fn id(&self) -> &'static str {
+        "safebooru-waifu"
+    }
+
     fn render(&mut self, ctx: &egui::Context) {
         egui::Window::new("Your daily waifu").show(ctx, |ui| {
             if let Some(image_with_metadata) = &*self.image.locked() {
