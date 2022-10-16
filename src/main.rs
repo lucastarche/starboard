@@ -28,15 +28,11 @@ impl StarboardApp {
 
 impl eframe::App for StarboardApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::Area::new("background")
-            .interactable(false)
-            .fixed_pos(ctx.available_rect().center() - self.background.size() / 2.0)
-            .order(egui::Order::Background)
-            .show(ctx, |ui| self.background.draw(ui));
-
         for gadget in &mut self.gadgets {
             gadget.render(ctx);
         }
+
+        egui::CentralPanel::default().show(ctx, |ui| self.background.draw(ui));
     }
 }
 

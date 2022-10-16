@@ -1,50 +1,44 @@
-use egui::{Color32, TextureHandle, Vec2};
-use utils::{Drawable, StarboardConfig};
+use egui_extras::RetainedImage;
+use std::{fs::File, io::Read};
+use utils::{
+    image::{fit_to_available_size, RetainedImageError},
+    Drawable, StarboardConfig,
+};
 
-#[derive(Default)]
 pub struct AppBackground {
-    texture: Option<TextureHandle>,
+    background: Option<RetainedImage>,
 }
 
 impl Drawable for AppBackground {
     fn draw(&mut self, ui: &mut egui::Ui) {
-        let texture: &TextureHandle = self.texture.get_or_insert_with(|| {
-            let color_image = StarboardConfig::open().and_then(|config| {
-                load_image_from_path(&config.background_path).map_err(anyhow::Error::new)
+        if let Some(background) = &self.background {
+            ui.centered_and_justified(|ui| {
+                ui.add(fit_to_available_size(ui, background));
             });
-
-            if let Ok(color_image) = color_image {
-                ui.ctx()
-                    .load_texture("background-image", color_image, egui::TextureFilter::Linear)
-            } else {
-                ui.ctx().load_texture(
-                    "background-image",
-                    egui::ColorImage::new([1920, 1080], Color32::from_rgb(0x28, 0x28, 0x28)),
-                    egui::TextureFilter::Linear,
-                )
-            }
-        });
-
-        ui.image(texture, texture.size_vec2());
-    }
-}
-
-impl AppBackground {
-    pub fn size(&self) -> Vec2 {
-        match &self.texture {
-            Some(t) => t.size_vec2(),
-            None => Vec2::ZERO,
         }
     }
 }
 
-fn load_image_from_path(path: &std::path::Path) -> Result<egui::ColorImage, image::ImageError> {
-    let image = image::io::Reader::open(path)?.decode()?;
-    let size = [image.width() as _, image.height() as _];
-    let image_buffer = image.to_rgba8();
-    let pixels = image_buffer.as_flat_samples();
-    Ok(egui::ColorImage::from_rgba_unmultiplied(
-        size,
-        pixels.as_slice(),
-    ))
+impl Default for AppBackground {
+    fn default() -> Self {
+        if let Ok(background) = StarboardConfig::open()
+            .and_then(|config| AppBackground::load_background(&config.background_path))
+        {
+            Self {
+                background: Some(background),
+            }
+        } else {
+            Self { background: None }
+        }
+    }
+}
+
+impl AppBackground {
+    fn load_background(path: &std::path::Path) -> anyhow::Result<RetainedImage> {
+        let f = File::open(path)?;
+        let bytes: Vec<u8> = f.bytes().map(|e| e.unwrap_or_default()).collect();
+        let image = RetainedImage::from_image_bytes("background-image", bytes.as_slice())
+            .map_err(RetainedImageError)?;
+        Ok(image)
+    }
 }

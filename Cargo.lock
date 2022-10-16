@@ -2566,6 +2566,7 @@ dependencies = [
  "cses-status",
  "eframe",
  "egui",
+ "egui_extras",
  "image",
  "safebooru-waifu",
  "serde",

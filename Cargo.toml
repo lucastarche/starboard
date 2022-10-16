@@ -28,6 +28,7 @@ utils = { path = "./utils" }
 [dependencies]
 anyhow.workspace = true
 egui.workspace = true
+egui_extras.workspace = true
 tokio.workspace = true
 serde.workspace = true
 utils.workspace = true
