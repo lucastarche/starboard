@@ -9,6 +9,7 @@ edition = "2021"
 anyhow.workspace = true
 egui.workspace = true
 reqwest.workspace = true
+serde.workspace = true
 tokio.workspace = true
 utils.workspace = true
 

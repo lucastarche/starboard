@@ -431,6 +431,7 @@ dependencies = [
  "reqwest",
  "scraper",
  "selectors",
+ "serde",
  "tokio",
  "utils",
 ]
