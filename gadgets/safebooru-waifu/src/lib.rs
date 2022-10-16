@@ -1,8 +1,8 @@
 use std::sync::{Arc, Mutex};
 
-use egui::{CursorIcon, Image, Sense};
+use egui::{CursorIcon, Sense};
 use safebooru::{query_random_image, ImageWithMetadata};
-use utils::{Gadget, GadgetFactory, MutexExt};
+use utils::{image::fit_to_available_size, Gadget, GadgetFactory, MutexExt};
 
 mod safebooru;
 
@@ -58,18 +58,9 @@ impl GadgetFactory for WaifuGadgetFactory {
 }
 
 fn render_waifu(ui: &mut egui::Ui, image_with_metadata: &ImageWithMetadata) {
-    let available_size = ui.available_size();
-
     let image = &image_with_metadata.inner;
-    let x_scale = image.size_vec2().x / available_size.x;
-    let y_scale = image.size_vec2().y / available_size.y;
-
     ui.centered_and_justified(|ui| {
-        let button = Image::new(
-            image.texture_id(ui.ctx()),
-            image.size_vec2() / x_scale.max(y_scale),
-        )
-        .sense(Sense::click());
+        let button = fit_to_available_size(ui, image).sense(Sense::click());
 
         let response = ui.add(button).on_hover_cursor(CursorIcon::PointingHand);
 
