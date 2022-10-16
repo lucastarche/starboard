@@ -32,7 +32,9 @@ impl eframe::App for StarboardApp {
             gadget.render(ctx);
         }
 
-        egui::CentralPanel::default().show(ctx, |ui| self.background.draw(ui));
+        egui::CentralPanel::default()
+            .frame(egui::Frame::none())
+            .show(ctx, |ui| self.background.draw(ui));
     }
 }
 
