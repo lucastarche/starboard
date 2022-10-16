@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 anyhow.workspace = true
 egui.workspace = true
+egui_extras.workspace = true
 tokio.workspace = true
 serde.workspace = true
 

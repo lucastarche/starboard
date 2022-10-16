@@ -1,6 +1,6 @@
 use egui_extras::RetainedImage;
 use serde::{Deserialize, Serialize};
-use utils::RetainedImageError;
+use utils::image::RetainedImageError;
 
 const QUERY_URL: &str = "https://safebooru.donmai.us/posts/random.json?tags=1girl";
 const POST_URL: &str = "https://safebooru.donmai.us/posts/";
