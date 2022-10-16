@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use toml_edit::Item;
+
 use crate::{app_storage, NetworkRuntime};
 
 pub trait Gadget {
@@ -36,6 +38,22 @@ where
         Some(config) => Ok(toml_edit::de::from_item(config.clone())?),
         None => anyhow::bail!("Missing section: {} in config file", gadget.id()),
     }
+}
+
+pub fn update_config_for_gadget<C>(gadget: &dyn Gadget, c: C) -> anyhow::Result<()>
+where
+    C: serde::Serialize,
+{
+    let config_path = app_storage::get_config_path();
+
+    let config = std::fs::read_to_string(&config_path)?;
+    let mut config = config.parse::<toml_edit::Document>()?;
+    let c = toml_edit::ser::to_item(&c)?.into_table().unwrap();
+    config[gadget.id()] = Item::Table(c);
+
+    std::fs::write(config_path, config.to_string())?;
+
+    Ok(())
 }
 
 pub fn user_data_dir_for_gadget(gadget: &dyn Gadget) -> PathBuf {
