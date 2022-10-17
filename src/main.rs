@@ -1,11 +1,14 @@
 use app_background::AppBackground;
+use search_bar::SearchBar;
 use utils::{Drawable, Gadget, NetworkRuntime};
 
 mod app_background;
 mod gadgets;
+mod search_bar;
 
 pub struct StarboardApp {
     background: AppBackground,
+    search_bar: SearchBar,
     gadgets: Vec<Box<dyn Gadget>>,
 }
 
@@ -21,6 +24,7 @@ impl StarboardApp {
 
         Self {
             background: AppBackground::default(),
+            search_bar: SearchBar::default(),
             gadgets,
         }
     }
@@ -37,6 +41,16 @@ impl eframe::App for StarboardApp {
         for gadget in &mut self.gadgets {
             gadget.render(ctx);
         }
+
+        // modifiers.command returns true if Ctrl is down in Windows / Linux
+        // or Command is down in MacOS
+        let ctrl_down = ctx.input().modifiers.command;
+        let enter_down = ctx.input().key_pressed(egui::Key::Enter);
+        if ctrl_down && enter_down {
+            self.search_bar.toggle();
+        }
+
+        self.search_bar.draw(ctx);
     }
 }
 
