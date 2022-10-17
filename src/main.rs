@@ -50,7 +50,7 @@ impl eframe::App for StarboardApp {
             self.search_bar.toggle();
         }
 
-        self.search_bar.draw(ctx);
+        self.search_bar.update(ctx);
     }
 }
 
