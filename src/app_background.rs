@@ -1,3 +1,4 @@
+use egui::Image;
 use egui_extras::RetainedImage;
 use std::{fs::File, io::Read};
 use utils::{
@@ -12,9 +13,10 @@ pub struct AppBackground {
 impl Drawable for AppBackground {
     fn draw(&mut self, ui: &mut egui::Ui) {
         if let Some(background) = &self.background {
-            ui.centered_and_justified(|ui| {
-                ui.add(fit_to_available_size(ui, background));
-            });
+            ui.put(
+                egui::Rect::from_min_max(egui::Pos2::ZERO, background.size_vec2().to_pos2()),
+                Image::new(background.texture_id(ui.ctx()), background.size_vec2()),
+            );
         }
     }
 }
