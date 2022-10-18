@@ -11,12 +11,17 @@ pub struct SearchBar {
     selected: usize,
 
     matching_gadgets: Vec<&'static (dyn GadgetFactory + Sync)>,
+    pub add_gadget: Option<&'static (dyn GadgetFactory + Sync)>,
 }
 
 impl SearchBar {
     pub fn toggle(&mut self) {
-        self.is_open = !self.is_open;
-        self.is_first_frame = true;
+        if self.is_open {
+            self.close();
+        } else {
+            self.is_open = true;
+            self.is_first_frame = true;
+        }
     }
 
     pub fn update(&mut self, ctx: &egui::Context) {
@@ -64,22 +69,29 @@ impl SearchBar {
         let pressed_enter = ui.input().key_pressed(Key::Enter);
         let pressed_shift = ui.input().modifiers.shift;
         let should_close = edit_response.lost_focus() && !pressed_tab && !pressed_enter;
-        // TODO: Handle enter for opening selected gadget
 
         if should_close {
-            self.is_open = false;
+            self.close();
             return;
         }
 
         if edit_response.changed() || self.is_first_frame {
+            // TODO: Use fuzzy matching instead
             self.matching_gadgets = gadgets::GADGET_FACTORIES
                 .iter()
                 .copied()
-                .filter(|gadget| gadget.gadget_name().contains(&self.search_query))
+                .filter(|gadget| {
+                    gadget
+                        .gadget_name()
+                        .to_lowercase()
+                        .contains(&self.search_query.to_lowercase())
+                })
                 .collect();
 
             self.is_first_frame = false;
-            self.selected = self.selected.clamp(0, self.matching_gadgets.len() - 1);
+            self.selected = self
+                .selected
+                .clamp(0, self.matching_gadgets.len().saturating_sub(1));
         }
 
         if (pressed_tab && !pressed_shift) || ui.input().key_pressed(Key::ArrowDown) {
@@ -87,6 +99,12 @@ impl SearchBar {
         }
         if (pressed_tab && pressed_shift) || ui.input().key_pressed(Key::ArrowUp) {
             self.select_prev();
+        }
+
+        if pressed_enter && !ui.input().modifiers.command {
+            self.add_gadget = Some(self.matching_gadgets[self.selected]);
+            self.close();
+            return;
         }
 
         edit_response.request_focus();
@@ -106,5 +124,11 @@ impl SearchBar {
         } else {
             self.selected -= 1;
         }
+    }
+
+    fn close(&mut self) {
+        self.is_open = false;
+        self.selected = 0;
+        self.search_query = String::new();
     }
 }

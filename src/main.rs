@@ -7,25 +7,22 @@ mod gadgets;
 mod search_bar;
 
 pub struct StarboardApp {
+    network_runtime: NetworkRuntime,
+
     background: AppBackground,
     search_bar: SearchBar,
     gadgets: Vec<Box<dyn Gadget>>,
 }
 
 impl StarboardApp {
-    fn new(egui_ctx: &egui::Context) -> Self {
+    fn new(_egui_ctx: &egui::Context) -> Self {
         let network_runtime = setup_network_runtime();
-        let mut gadgets = vec![];
-
-        // FIXME: Also allow users to spawn gadgets as they wish in the UI
-        for gadget_factory in gadgets::GADGET_FACTORIES {
-            gadgets.push(gadget_factory.make_gadget(&network_runtime, egui_ctx));
-        }
 
         Self {
+            network_runtime,
             background: AppBackground::default(),
             search_bar: SearchBar::default(),
-            gadgets,
+            gadgets: vec![],
         }
     }
 }
@@ -51,6 +48,12 @@ impl eframe::App for StarboardApp {
         }
 
         self.search_bar.update(ctx);
+
+        if let Some(factory) = self.search_bar.add_gadget {
+            self.gadgets
+                .push(factory.make_gadget(&self.network_runtime, ctx));
+            self.search_bar.add_gadget = None;
+        }
     }
 }
 
