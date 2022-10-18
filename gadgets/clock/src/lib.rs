@@ -2,7 +2,9 @@ use chrono::Local;
 use egui::RichText;
 use utils::{Gadget, GadgetFactory};
 
-pub struct ClockGadget(usize);
+pub struct ClockGadget {
+    id: usize,
+}
 
 pub struct ClockGadgetFactory;
 
@@ -14,7 +16,7 @@ impl Gadget for ClockGadget {
     fn render(&mut self, ctx: &egui::Context) {
         egui::Window::new("Clock")
             .resizable(false)
-            .id(self.make_id(self.0))
+            .id(self.make_id(self.id))
             .show(ctx, |ui| {
                 let now = Local::now();
                 let text = RichText::new(now.format("%H:%M").to_string()).size(64.0);
@@ -34,6 +36,6 @@ impl GadgetFactory for ClockGadgetFactory {
         _egui_ctx: &egui::Context,
         id: usize,
     ) -> Box<dyn Gadget> {
-        Box::new(ClockGadget(id))
+        Box::new(ClockGadget { id })
     }
 }
