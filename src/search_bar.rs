@@ -1,16 +1,21 @@
-use egui::{Color32, Key};
+use egui::{Color32, Key, TextStyle};
+use utils::GadgetFactory;
 
 use crate::gadgets;
 
 #[derive(Default)]
 pub struct SearchBar {
     is_open: bool,
+    is_first_frame: bool,
     search_query: String,
+
+    matching_gadgets: Vec<&'static (dyn GadgetFactory + Sync)>,
 }
 
 impl SearchBar {
     pub fn toggle(&mut self) {
         self.is_open = !self.is_open;
+        self.is_first_frame = true;
     }
 
     pub fn update(&mut self, ctx: &egui::Context) {
@@ -28,24 +33,15 @@ impl SearchBar {
     }
 
     fn draw_search_bar(&mut self, ui: &mut egui::Ui) {
+        ui.style_mut().override_text_style = Some(TextStyle::Heading);
         let response = ui.text_edit_singleline(&mut self.search_query);
         self.handle_input(ui, &response);
 
-        let possible_gadgets = gadgets::GADGET_FACTORIES.iter().filter_map(|gadget| {
-            if gadget.gadget_name().starts_with(&self.search_query) {
-                Some(gadget.gadget_name())
-            } else {
-                None
-            }
-        });
-
-        let mut any_matched = false;
-        for gadget in possible_gadgets {
-            any_matched = true;
-            ui.label(gadget);
+        for gadget in self.matching_gadgets.iter() {
+            ui.label(gadget.gadget_name());
         }
 
-        if !any_matched {
+        if self.matching_gadgets.is_empty() {
             ui.colored_label(Color32::RED, "Could not find any gadget");
         }
     }
@@ -61,6 +57,16 @@ impl SearchBar {
         if should_close {
             self.is_open = false;
             return;
+        }
+
+        if edit_response.changed() || self.is_first_frame {
+            self.matching_gadgets = gadgets::GADGET_FACTORIES
+                .iter()
+                .copied()
+                .filter(|gadget| gadget.gadget_name().contains(&self.search_query))
+                .collect();
+
+            self.is_first_frame = false;
         }
 
         edit_response.request_focus();
