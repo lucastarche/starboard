@@ -7,6 +7,7 @@ mod gadgets;
 mod search_bar;
 
 pub struct StarboardApp {
+    current_id: usize,
     network_runtime: NetworkRuntime,
 
     background: AppBackground,
@@ -19,6 +20,7 @@ impl StarboardApp {
         let network_runtime = setup_network_runtime();
 
         Self {
+            current_id: 0,
             network_runtime,
             background: AppBackground::default(),
             search_bar: SearchBar::default(),
@@ -51,7 +53,8 @@ impl eframe::App for StarboardApp {
 
         if let Some(factory) = self.search_bar.add_gadget {
             self.gadgets
-                .push(factory.make_gadget(&self.network_runtime, ctx));
+                .push(factory.make_gadget(&self.network_runtime, ctx, self.current_id));
+            self.current_id += 1;
             self.search_bar.add_gadget = None;
         }
     }

@@ -11,6 +11,7 @@ use wttr::WeatherResponse;
 mod wttr;
 
 pub struct WeatherGadget {
+    id: usize,
     weather_data: Arc<Mutex<WeatherData>>,
 }
 
@@ -44,6 +45,7 @@ impl Gadget for WeatherGadget {
 
         egui::Window::new("Weather")
             .resizable(false)
+            .id(self.make_id(self.id))
             .show(ctx, |ui| {
                 ui.label(RichText::new(format!("{temperature}°C | {feels_like}°C")).size(64.0));
 
@@ -66,8 +68,10 @@ impl GadgetFactory for WeatherGadgetFactory {
         &self,
         network_runtime: &utils::NetworkRuntime,
         egui_ctx: &egui::Context,
+        id: usize,
     ) -> Box<dyn Gadget> {
         let weather_gadget = WeatherGadget {
+            id,
             weather_data: Arc::new(Mutex::new(WeatherData::default())),
         };
 

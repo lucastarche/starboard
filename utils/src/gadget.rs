@@ -8,6 +8,10 @@ pub trait Gadget {
     /// An id representing your gadget to be used in config sections or the filesystem
     fn id(&self) -> &'static str;
 
+    fn make_id(&self, id: usize) -> egui::Id {
+        egui::Id::new(format!("{}-{id}", self.id()))
+    }
+
     fn render(&mut self, ctx: &egui::Context);
 }
 
@@ -23,6 +27,7 @@ pub trait GadgetFactory {
         &self,
         network_runtime: &NetworkRuntime,
         egui_ctx: &egui::Context,
+        id: usize,
     ) -> Box<dyn Gadget>;
 }
 
