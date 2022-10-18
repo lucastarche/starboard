@@ -1,27 +1,30 @@
 use app_background::AppBackground;
+use search_bar::SearchBar;
 use utils::{Drawable, Gadget, NetworkRuntime};
 
 mod app_background;
 mod gadgets;
+mod search_bar;
 
 pub struct StarboardApp {
+    current_id: usize,
+    network_runtime: NetworkRuntime,
+
     background: AppBackground,
+    search_bar: SearchBar,
     gadgets: Vec<Box<dyn Gadget>>,
 }
 
 impl StarboardApp {
-    fn new(egui_ctx: &egui::Context) -> Self {
+    fn new(_egui_ctx: &egui::Context) -> Self {
         let network_runtime = setup_network_runtime();
-        let mut gadgets = vec![];
-
-        // FIXME: Also allow users to spawn gadgets as they wish in the UI
-        for gadget_factory in gadgets::GADGET_FACTORIES {
-            gadgets.push(gadget_factory.make_gadget(&network_runtime, egui_ctx));
-        }
 
         Self {
+            current_id: 0,
+            network_runtime,
             background: AppBackground::default(),
-            gadgets,
+            search_bar: SearchBar::default(),
+            gadgets: vec![],
         }
     }
 }
@@ -36,6 +39,23 @@ impl eframe::App for StarboardApp {
 
         for gadget in &mut self.gadgets {
             gadget.render(ctx);
+        }
+
+        // modifiers.command returns true if Ctrl is down in Windows / Linux
+        // or Command is down in MacOS
+        let ctrl_down = ctx.input().modifiers.command;
+        let enter_down = ctx.input().key_pressed(egui::Key::Enter);
+        if ctrl_down && enter_down {
+            self.search_bar.toggle();
+        }
+
+        self.search_bar.update(ctx);
+
+        if let Some(factory) = self.search_bar.add_gadget {
+            self.gadgets
+                .push(factory.make_gadget(&self.network_runtime, ctx, self.current_id));
+            self.current_id += 1;
+            self.search_bar.add_gadget = None;
         }
     }
 }

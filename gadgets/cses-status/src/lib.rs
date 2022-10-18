@@ -8,6 +8,7 @@ use utils::{Gadget, GadgetFactory, MutexExt};
 mod cses_query;
 
 pub struct CSESStatusGadget {
+    id: usize,
     problem_data: ProblemData,
     network_runtime: utils::NetworkRuntime,
     should_ask_for_id: bool,
@@ -58,6 +59,7 @@ impl Gadget for CSESStatusGadget {
 
     fn render(&mut self, ctx: &egui::Context) {
         egui::Window::new("CSES Status")
+            .id(self.make_id(self.id))
             .min_width(200.0)
             .show(ctx, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| {
@@ -82,8 +84,10 @@ impl GadgetFactory for CSESStatusGadgetFactory {
         &self,
         network_runtime: &utils::NetworkRuntime,
         egui_ctx: &egui::Context,
+        id: usize,
     ) -> Box<dyn Gadget> {
         let mut cses_status_gadget = CSESStatusGadget {
+            id,
             problem_data: Arc::new(Mutex::new(vec![])),
             network_runtime: network_runtime.clone(),
             should_ask_for_id: false,

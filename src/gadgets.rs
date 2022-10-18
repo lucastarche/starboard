@@ -1,6 +1,6 @@
 use utils::GadgetFactory;
 
-pub const GADGET_FACTORIES: &[&dyn GadgetFactory] = &[
+pub static GADGET_FACTORIES: &[&(dyn GadgetFactory + Sync)] = &[
     #[cfg(feature = "clock")]
     &clock::ClockGadgetFactory,
     #[cfg(feature = "weather")]

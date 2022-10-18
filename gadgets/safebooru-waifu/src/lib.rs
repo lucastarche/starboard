@@ -7,6 +7,7 @@ use utils::{Gadget, GadgetFactory, MutexExt};
 mod safebooru;
 
 pub struct WaifuGadget {
+    id: usize,
     image: Arc<Mutex<Option<ImageWithMetadata>>>,
 }
 
@@ -18,11 +19,13 @@ impl Gadget for WaifuGadget {
     }
 
     fn render(&mut self, ctx: &egui::Context) {
-        egui::Window::new("Your daily waifu").show(ctx, |ui| {
-            if let Some(image_with_metadata) = &*self.image.locked() {
-                render_waifu(ui, image_with_metadata);
-            }
-        });
+        egui::Window::new("Your daily waifu")
+            .id(self.make_id(self.id))
+            .show(ctx, |ui| {
+                if let Some(image_with_metadata) = &*self.image.locked() {
+                    render_waifu(ui, image_with_metadata);
+                }
+            });
     }
 }
 
@@ -35,8 +38,10 @@ impl GadgetFactory for WaifuGadgetFactory {
         &self,
         network_runtime: &utils::NetworkRuntime,
         egui_ctx: &egui::Context,
+        id: usize,
     ) -> Box<dyn Gadget> {
         let waifu_gadget = WaifuGadget {
+            id,
             image: Arc::default(),
         };
 
