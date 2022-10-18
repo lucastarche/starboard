@@ -6,7 +6,6 @@ use crate::gadgets;
 #[derive(Default)]
 pub struct SearchBar {
     is_open: bool,
-    is_first_frame: bool,
     search_query: String,
     selected: usize,
 
@@ -20,7 +19,7 @@ impl SearchBar {
             self.close();
         } else {
             self.is_open = true;
-            self.is_first_frame = true;
+            self.update_matching_gadgets();
         }
     }
 
@@ -75,20 +74,9 @@ impl SearchBar {
             return;
         }
 
-        if edit_response.changed() || self.is_first_frame {
+        if edit_response.changed() {
             // TODO: Use fuzzy matching instead
-            self.matching_gadgets = gadgets::GADGET_FACTORIES
-                .iter()
-                .copied()
-                .filter(|gadget| {
-                    gadget
-                        .gadget_name()
-                        .to_lowercase()
-                        .contains(&self.search_query.to_lowercase())
-                })
-                .collect();
-
-            self.is_first_frame = false;
+            self.update_matching_gadgets();
             self.selected = self
                 .selected
                 .clamp(0, self.matching_gadgets.len().saturating_sub(1));
@@ -108,6 +96,19 @@ impl SearchBar {
         }
 
         edit_response.request_focus();
+    }
+
+    fn update_matching_gadgets(&mut self) {
+        self.matching_gadgets = gadgets::GADGET_FACTORIES
+            .iter()
+            .copied()
+            .filter(|gadget| {
+                gadget
+                    .gadget_name()
+                    .to_lowercase()
+                    .contains(&self.search_query.to_lowercase())
+            })
+            .collect();
     }
 
     fn select_next(&mut self) {
