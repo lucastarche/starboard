@@ -41,6 +41,8 @@ impl eframe::App for StarboardApp {
             gadget.render(ctx);
         }
 
+        self.gadgets.retain(|gadget| gadget.is_open()); // Remove closed gadgets
+
         // modifiers.command returns true if Ctrl is down in Windows / Linux
         // or Command is down in MacOS
         let ctrl_down = ctx.input().modifiers.command;

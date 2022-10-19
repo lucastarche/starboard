@@ -9,6 +9,7 @@ mod cses_query;
 
 pub struct CSESStatusGadget {
     id: usize,
+    is_open: bool,
     problem_data: ProblemData,
     network_runtime: utils::NetworkRuntime,
     should_ask_for_id: bool,
@@ -58,8 +59,10 @@ impl Gadget for CSESStatusGadget {
     }
 
     fn render(&mut self, ctx: &egui::Context) {
+        let mut is_open = self.is_open; // We can not borrow mutably twice, so make the change after `show()`
         egui::Window::new("CSES Status")
             .id(self.make_id(self.id))
+            .open(&mut is_open)
             .min_width(200.0)
             .show(ctx, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| {
@@ -72,6 +75,12 @@ impl Gadget for CSESStatusGadget {
                     }
                 });
             });
+
+        self.is_open = is_open;
+    }
+
+    fn is_open(&self) -> bool {
+        self.is_open
     }
 }
 
@@ -88,6 +97,7 @@ impl GadgetFactory for CSESStatusGadgetFactory {
     ) -> Box<dyn Gadget> {
         let mut cses_status_gadget = CSESStatusGadget {
             id,
+            is_open: true,
             problem_data: Arc::new(Mutex::new(vec![])),
             network_runtime: network_runtime.clone(),
             should_ask_for_id: false,

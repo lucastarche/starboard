@@ -12,6 +12,7 @@ mod wttr;
 
 pub struct WeatherGadget {
     id: usize,
+    is_open: bool,
     weather_data: Arc<Mutex<WeatherData>>,
 }
 
@@ -46,6 +47,7 @@ impl Gadget for WeatherGadget {
         egui::Window::new("Weather")
             .resizable(false)
             .id(self.make_id(self.id))
+            .open(&mut self.is_open)
             .show(ctx, |ui| {
                 ui.label(RichText::new(format!("{temperature}°C | {feels_like}°C")).size(64.0));
 
@@ -56,6 +58,10 @@ impl Gadget for WeatherGadget {
                     ui.label(RichText::new(format!(" at {retrieved_at})")).size(16.0));
                 });
             });
+    }
+
+    fn is_open(&self) -> bool {
+        self.is_open
     }
 }
 
@@ -72,6 +78,7 @@ impl GadgetFactory for WeatherGadgetFactory {
     ) -> Box<dyn Gadget> {
         let weather_gadget = WeatherGadget {
             id,
+            is_open: true,
             weather_data: Arc::new(Mutex::new(WeatherData::default())),
         };
 
