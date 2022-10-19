@@ -13,6 +13,7 @@ pub trait Gadget {
     }
 
     fn render(&mut self, ctx: &egui::Context);
+    fn is_open(&self) -> bool;
 }
 
 pub trait GadgetFactory {

@@ -41,6 +41,8 @@ impl eframe::App for StarboardApp {
             gadget.render(ctx);
         }
 
+        self.gadgets.retain(|gadget| gadget.is_open()); // Remove closed gadgets
+
         // modifiers.command returns true if Ctrl is down in Windows / Linux
         // or Command is down in MacOS
         let ctrl_down = ctx.input().modifiers.command;
@@ -72,8 +74,13 @@ fn setup_network_runtime() -> NetworkRuntime {
                 .unwrap();
             tx.send(runtime.handle().clone())
                 .expect("the other end of this sender shouldn't be gone already");
-            runtime
-                .block_on(async { tokio::time::sleep(std::time::Duration::from_secs(30)).await });
+
+            loop {
+                // Don't fucking die, dumbass
+                runtime.block_on(async {
+                    tokio::time::sleep(std::time::Duration::from_secs(3600)).await
+                });
+            }
         })
         .expect("failed to spawn thead");
 

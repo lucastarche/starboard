@@ -8,6 +8,7 @@ mod safebooru;
 
 pub struct WaifuGadget {
     id: usize,
+    is_open: bool,
     image: Arc<Mutex<Option<ImageWithMetadata>>>,
 }
 
@@ -21,11 +22,16 @@ impl Gadget for WaifuGadget {
     fn render(&mut self, ctx: &egui::Context) {
         egui::Window::new("Your daily waifu")
             .id(self.make_id(self.id))
+            .open(&mut self.is_open)
             .show(ctx, |ui| {
                 if let Some(image_with_metadata) = &*self.image.locked() {
                     render_waifu(ui, image_with_metadata);
                 }
             });
+    }
+
+    fn is_open(&self) -> bool {
+        self.is_open
     }
 }
 
@@ -42,6 +48,7 @@ impl GadgetFactory for WaifuGadgetFactory {
     ) -> Box<dyn Gadget> {
         let waifu_gadget = WaifuGadget {
             id,
+            is_open: true,
             image: Arc::default(),
         };
 
