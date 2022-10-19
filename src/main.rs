@@ -74,8 +74,13 @@ fn setup_network_runtime() -> NetworkRuntime {
                 .unwrap();
             tx.send(runtime.handle().clone())
                 .expect("the other end of this sender shouldn't be gone already");
-            runtime
-                .block_on(async { tokio::time::sleep(std::time::Duration::from_secs(30)).await });
+
+            loop {
+                // Don't fucking die, dumbass
+                runtime.block_on(async {
+                    tokio::time::sleep(std::time::Duration::from_secs(3600)).await
+                });
+            }
         })
         .expect("failed to spawn thead");
 
