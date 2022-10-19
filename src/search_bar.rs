@@ -90,7 +90,9 @@ impl SearchBar {
         }
 
         if pressed_enter && !ui.input().modifiers.command {
-            self.add_gadget = Some(self.matching_gadgets[self.selected]);
+            if self.selected < self.matching_gadgets.len() {
+                self.add_gadget = Some(self.matching_gadgets[self.selected]);
+            }
             self.close();
             return;
         }
