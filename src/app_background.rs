@@ -10,7 +10,13 @@ impl Drawable for AppBackground {
     fn draw(&mut self, ui: &mut egui::Ui) {
         let texture: &TextureHandle = self.texture.get_or_insert_with(|| {
             let color_image = StarboardConfig::open().and_then(|config| {
-                load_image_from_path(&config.background_path).map_err(anyhow::Error::new)
+                config
+                    .background_path
+                    .ok_or_else(|| anyhow::format_err!("Missing background-path in config"))
+                    .and_then(|path| {
+                        load_image_from_path(&path, config.background_transparency)
+                            .map_err(anyhow::Error::new)
+                    })
             });
 
             if let Ok(color_image) = color_image {
@@ -38,10 +44,18 @@ impl AppBackground {
     }
 }
 
-fn load_image_from_path(path: &std::path::Path) -> Result<egui::ColorImage, image::ImageError> {
+fn load_image_from_path(
+    path: &std::path::Path,
+    alpha: f64,
+) -> Result<egui::ColorImage, image::ImageError> {
     let image = image::io::Reader::open(path)?.decode()?;
     let size = [image.width() as _, image.height() as _];
-    let image_buffer = image.to_rgba8();
+    let mut image_buffer = image.to_rgba8();
+
+    for pixel in image_buffer.pixels_mut() {
+        pixel.0[3] = (pixel.0[3] as f64 * alpha) as u8;
+    }
+
     let pixels = image_buffer.as_flat_samples();
     Ok(egui::ColorImage::from_rgba_unmultiplied(
         size,

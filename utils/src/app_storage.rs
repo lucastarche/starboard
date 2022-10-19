@@ -1,9 +1,12 @@
 use std::path::PathBuf;
 
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct StarboardConfig {
     #[serde(rename = "background")]
-    pub background_path: PathBuf,
+    pub background_path: Option<PathBuf>,
+    #[serde(default = "one")]
+    pub background_transparency: f64,
 }
 
 impl StarboardConfig {
@@ -13,6 +16,11 @@ impl StarboardConfig {
 
         Ok(toml_edit::easy::from_str(&config)?)
     }
+}
+
+/// Avoid calling this, it's just for serde
+const fn one() -> f64 {
+    1.0
 }
 
 pub(crate) fn get_config_path() -> PathBuf {

@@ -1,6 +1,6 @@
 use app_background::AppBackground;
 use search_bar::SearchBar;
-use utils::{Drawable, Gadget, NetworkRuntime};
+use utils::{Drawable, Gadget, NetworkRuntime, StarboardConfig};
 
 mod app_background;
 mod gadgets;
@@ -10,19 +10,19 @@ pub struct StarboardApp {
     current_id: usize,
     network_runtime: NetworkRuntime,
 
-    background: AppBackground,
+    background: Option<AppBackground>,
     search_bar: SearchBar,
     gadgets: Vec<Box<dyn Gadget>>,
 }
 
 impl StarboardApp {
-    fn new(_egui_ctx: &egui::Context) -> Self {
+    fn new(_egui_ctx: &egui::Context, draw_background: bool) -> Self {
         let network_runtime = setup_network_runtime();
 
         Self {
             current_id: 0,
             network_runtime,
-            background: AppBackground::default(),
+            background: draw_background.then(AppBackground::default),
             search_bar: SearchBar::default(),
             gadgets: vec![],
         }
@@ -31,11 +31,13 @@ impl StarboardApp {
 
 impl eframe::App for StarboardApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::Area::new("background")
-            .interactable(false)
-            .fixed_pos(ctx.available_rect().center() - self.background.size() / 2.0)
-            .order(egui::Order::Background)
-            .show(ctx, |ui| self.background.draw(ui));
+        if let Some(background) = &mut self.background {
+            egui::Area::new("background")
+                .interactable(false)
+                .fixed_pos(ctx.available_rect().center() - background.size() / 2.0)
+                .order(egui::Order::Background)
+                .show(ctx, |ui| background.draw(ui));
+        }
 
         for gadget in &mut self.gadgets {
             gadget.render(ctx);
@@ -81,15 +83,26 @@ fn setup_network_runtime() -> NetworkRuntime {
 }
 
 fn main() {
+    let (transparent_background, draw_background) = StarboardConfig::open()
+        .map(|config| {
+            (
+                config.background_transparency < 1.0,
+                // We special case 0.0 transparency in order to not paint at all, which is more efficient
+                config.background_transparency != 0.0,
+            )
+        })
+        .unwrap_or_default();
+
     let options = eframe::NativeOptions {
         maximized: true,
         decorated: false,
+        transparent: transparent_background,
         ..Default::default()
     };
 
     eframe::run_native(
         "starboard",
         options,
-        Box::new(|cc| Box::new(StarboardApp::new(&cc.egui_ctx))),
+        Box::new(move |cc| Box::new(StarboardApp::new(&cc.egui_ctx, draw_background))),
     );
 }
